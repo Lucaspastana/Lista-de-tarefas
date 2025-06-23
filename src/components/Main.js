@@ -9,20 +9,34 @@ export default class Main extends Component {
  state = {
       novaTarefa:'',
       tarefas: [],
+      index: -1,
 
     };
     handleSubmit = (e) =>{
       e.preventDefault();
-      const {tarefas}= this.state;
+      const {tarefas,index}= this.state;
       let {novaTarefa}= this.state;
       novaTarefa = novaTarefa.trim();
       if(tarefas.indexOf(novaTarefa) != -1) return;
 
       const novasTarefas= [...tarefas];
 
-      this.setState({
+      if(index == -1){
+        this.setState({
         tarefas:[...novasTarefas,novaTarefa],
+        novaTarefa:'',
       });
+
+      }else {
+
+        novasTarefas[index]=novaTarefa;
+        this.setState({
+          tarefas:[...novasTarefas],
+          index: -1,
+        })
+      }
+
+
     }
 
   handleChange =(e)=>{
@@ -30,7 +44,22 @@ export default class Main extends Component {
       novaTarefa: e.target.value,
     });
   }
+  handleEdit = (e,index)=>{
+    const {tarefas} = this.state
+   this.setState({
+    index,
+    novaTarefa:tarefas[index],
+   })
+  }
+  handleDelete = (e,index)=>{
+    const {tarefas} = this.state;
+    const novasTarefas = [...tarefas];
+    novasTarefas.splice(index,1);
 
+    this.setState({
+      tarefas:[...novasTarefas],
+    })
+  }
 
   render(){
     const {novaTarefa, tarefas}=this.state;
@@ -50,12 +79,17 @@ export default class Main extends Component {
 
         </form>
         <ul className="tarefas">
-          {tarefas.map((tarefas) => (
+          {tarefas.map((tarefas,index) => (
             <li key={tarefas}>
               {tarefas}
               <div>
-                <FaEdit className="edit"/>
-                <FaWindowClose className="delete"/>
+                <FaEdit
+                 onClick={(e)=>this.handleEdit(e,index)}
+                 className="edit"/>
+                <FaWindowClose
+                className="delete"
+                onClick={(e)=> this.handleDelete(e, index)}
+                />
 
               </div>
 
